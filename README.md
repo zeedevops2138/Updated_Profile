@@ -1,70 +1,125 @@
-## demo app - developing with Docker
+# Updated Profile App
 
-This demo app shows a simple user profile app set up using 
-- index.html with pure js and css styles
-- nodejs backend with express module
-- mongodb for data storage
+A full-stack profile management application built with:
 
-All components are docker-based
+- **Node.js + Express**
+- **MongoDB + Mongo Express (via Docker)**
+- **Amazon S3** for profile image storage
+- **Bootstrap UI** for responsive frontend
 
-### With Docker
+This app allows users to:
+- Enter their email to load an existing profile (if any)
+- Upload a profile picture
+- Fill out profile details (name, DOB, bio, etc.)
+- Persist everything in **MongoDB**
+- Store uploaded images securely in **Amazon S3**
 
-#### To start the application
+---
 
-Step 1: Create docker network
+## 🌐 Live Tech Stack
 
-    docker network create mongo-network 
+- **Frontend**: HTML + Bootstrap + Vanilla JS
+- **Backend**: Node.js + Express
+- **Database**: MongoDB (Dockerized)
+- **File Storage**: AWS S3
+- **Mongo Dashboard**: Mongo Express (via Docker)
 
-Step 2: start mongodb 
+---
 
-    docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --name mongodb --net mongo-network mongo    
+## 🔐 Environment Setup (`.env` file)
 
-Step 3: start mongo-express
-    
-    docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb mongo-express   
+You must create a `.env` file in the root of the project with the following variables:
 
-_NOTE: creating docker-network in optional. You can start both containers in a default network. In this case, just emit `--net` flag in `docker run` command_
+```env
+# MongoDB
+MONGODB_URI=mongodb://admin:password@mongodb:27017
+MONGODB_DB_NAME=profileAppDB
+MONGO_INITDB_ROOT_USERNAME=admin
+MONGO_INITDB_ROOT_PASSWORD=password
 
-Step 4: open mongo-express from browser
+# AWS S3 Config
+AWS_ACCESS_KEY_ID=your-access-key-id
+AWS_SECRET_ACCESS_KEY=your-secret-access-key
+AWS_REGION=your-region (e.g., us-east-1)
+AWS_BUCKET_NAME=your-bucket-name
 
-    http://localhost:8081
+# App
+APP_PORT=3000
 
-Step 5: create `user-account` _db_ and `users` _collection_ in mongo-express
 
-Step 6: Start your nodejs application locally - go to `app` directory of project 
+🚀 Run the App Locally (via Docker)
+Prerequisites:
 
-    npm install 
-    node server.js
-    
-Step 7: Access you nodejs application UI from browser
+Docker Compose
 
-    http://localhost:3000
+1. Clone the Repository
+git clone https://github.com/your-username/techworld-js-docker-demo-app.git
 
-### With Docker Compose
+cd techworld-js-docker-demo-app
 
-#### To start the application
+2. Create .env file
 
-Step 1: start mongodb and mongo-express
+As explained above.
 
-    docker-compose -f docker-compose.yaml up
-    
-_You can access the mongo-express under localhost:8080 from your browser_
-    
-Step 2: in mongo-express UI - create a new database "my-db"
+3. Build & Run with Docker Compose
+   docker compose up --build
 
-Step 3: in mongo-express UI - create a new collection "users" in the database "my-db"       
-    
-Step 4: start node server 
+4. Access the App
 
-    npm install
-    node server.js
-    
-Step 5: access the nodejs application from browser 
+Frontend: http://localhost:3000
 
-    http://localhost:3000
+Mongo Express: http://localhost:8081
 
-#### To build a docker image from the application
+🪣 How to Create and Configure AWS S3 Bucket
 
-    docker build -t my-app:1.0 .       
-    
-The dot "." at the end of the command denotes location of the Dockerfile.
+Login to AWS Console → Go to S3
+
+Create a new bucket (e.g., users-updated-photos-bucket)
+
+Disable "Block all public access"
+
+Set Bucket Policy like below:
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::users-updated-photos-bucket/*"
+    }
+  ]
+}
+
+
+Make sure:
+
+Your AWS IAM user has PutObject permission
+
+You use correct AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env
+
+📁 Project Structure
+├── server.js              # Express backend
+├── index.html             # Main frontend
+├── style.css              # UI styling
+├── images/                # Default profile picture
+├── .env                   # Environment config
+├── docker-compose.yml     # All services
+├── Dockerfile             # For the app container
+└── README.md              # You're reading this
+
+✅ Features
+
+🔍 Load user by email
+
+🖼️ Upload profile photo to S3
+
+🧾 Save full user data in MongoDB
+
+📊 View and verify via Mongo Express
+
+🌐 Clean Bootstrap UI
+
+💾 Persistent DB storage via volumes

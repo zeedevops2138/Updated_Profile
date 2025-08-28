@@ -1,18 +1,31 @@
-FROM node:13-alpine
+##############################
+# Stage 1: Build Dependencies
+##############################
+FROM node:20-slim AS build
 
-ENV MONGO_DB_USERNAME=admin \
-    MONGO_DB_PWD=password
+WORKDIR /app
 
-RUN mkdir -p /home/app
+COPY app/package*.json ./
 
-COPY ./app /home/app
+RUN npm install --omit=dev
 
-# set default dir so that next commands executes in /home/app dir
-WORKDIR /home/app
+COPY app ./
 
-# will execute npm install in /home/app because of WORKDIR
-RUN npm install
+##############################
+# Stage 2: Runtime Container
+##############################
+FROM node:20-slim
 
-# no need for /home/app/server.js because of WORKDIR
+RUN groupadd -r appuser && useradd -r -g appuser -d /app appuser
+
+WORKDIR /app
+
+COPY --from=build /app /app
+
+RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
+
+USER appuser
+
+EXPOSE 3000
+
 CMD ["node", "server.js"]
-

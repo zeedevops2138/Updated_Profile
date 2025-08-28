@@ -1,27 +1,53 @@
-version: '3'
+version: '3.8'
 services:
-  # my-app:
-  # image: ${docker-registry}/my-app:1.0
-  # ports:
-  # - 3000:3000
-  mongodb:
-    image: mongo
+  app:
+    build: .
+    container_name: Updated-User-Profile-App
     ports:
-      - 27017:27017
+      - "${HOST_PORT}:${APP_PORT}"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_DB_NAME=${MONGODB_DB_NAME}
+      - PORT=${APP_PORT}
+    depends_on:
+      - mongodb
+    volumes:
+      - ./images:/app/images
+      - /home/zeeshan/uploads:/app/uploads  # ✅ Mount local "uploads" to container
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:8.0
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongo-data:/data/db
+    restart: unless-stopped
+
   mongo-express:
-    image: mongo-express
-    restart: always # fixes MongoNetworkError when mongodb is not ready when mongo-express starts
+    image: mongo-express:1.0.2-20-alpine3.19
+    container_name: mongo-express
     ports:
-      - 8080:8081
+      - "8081:8081"
     environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_URL="mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/?authSource=admin"
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_BASICAUTH_USERNAME=admin   # Optional: for securing mongo-express
+      - ME_CONFIG_BASICAUTH_PASSWORD=password  # Optional: for securing mongo-express
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
 volumes:
   mongo-data:
-    driver: local

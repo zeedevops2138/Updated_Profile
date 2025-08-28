@@ -1,0 +1,157 @@
+/* Reset and base styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #e6f7f4; /* light sea-green background */
+  color: #222;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #0a5c4c;
+}
+
+/* Container styles */
+.container {
+  max-width: 600px;
+  background-color: #ffffff;
+  padding: 30px;
+  margin: 40px auto;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-left: 8px solid #2bbf91;
+  position: relative;
+}
+
+/* Input styles */
+input[type="email"],
+input[type="text"],
+input[type="file"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 12px 0 18px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+/* Button styles */
+.button {
+  background-color: #2bbf91;
+  color: white;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #239b78;
+}
+
+/* Circle image preview */
+.circle-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 4px solid #2bbf91;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Profile row layout */
+.profile-row {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+/* Horizontal line */
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
+}
+
+/* Message styles */
+.message {
+  margin-top: 15px;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.message.error {
+  color: #b10000;
+  background-color: #ffe5e5;
+}
+
+.message.success {
+  color: #0f5d3f;
+  background-color: #d4f7e9;
+  border-left: 6px solid #1aae7e;
+  max-width: 100%;
+  display: block;
+  margin-top: 20px;
+}
+
+.message.info {
+  color: #004085;
+  background-color: #e2f0fb;
+  border-left: 6px solid #6dc3ff;
+}
+
+/* Image upload container */
+.file-upload-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 20px auto;
+}
+
+.file-upload-wrapper input[type="file"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.file-upload-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #e0f4ef;
+  border: 3px dashed #2bbf91;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.file-upload-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Upload icon */
+#upload-icon {
+  font-size: 28px;
+  color: #2bbf91;
+}
