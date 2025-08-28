@@ -49,7 +49,7 @@ Create a `.env` file in the root of the project with the following variables:
 
 ```env
 # MongoDB
-MONGODB_URI=mongodb://admin:password@mongodb:27017
+MONGODB_URI=mongodb://admin:password@mongodb:27017/?authSource=admin
 MONGODB_DB_NAME=my-db
 MONGO_INITDB_ROOT_USERNAME=admin
 MONGO_INITDB_ROOT_PASSWORD=password
