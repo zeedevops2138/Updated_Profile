@@ -6,6 +6,10 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build-and-push:
     name: Build Docker image and push to ECR
