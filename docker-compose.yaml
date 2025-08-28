@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   app:
-    build: .
+    image: 009160045098.dkr.ecr.us-east-1.amazonaws.com/updated-profile:latest
     container_name: Updated-User-Profile-App
     ports:
       - "${HOST_PORT}:${APP_PORT}"
