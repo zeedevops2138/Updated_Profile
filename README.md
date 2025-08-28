@@ -7,100 +7,122 @@ A full-stack profile management application built with:
 - **Amazon S3** for profile image storage
 - **Bootstrap UI** for responsive frontend
 
-This app allows users to:
-- Enter their email to load an existing profile (if any)
-- Upload a profile picture
-- Fill out profile details (name, DOB, bio, etc.)
-- Persist everything in **MongoDB**
-- Store uploaded images securely in **Amazon S3**
+---
+
+## Table of Contents
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Environment Setup](#environment-setup)
+- [Installation](#installation)
+- [Usage](#usage)
+- [AWS S3 Setup](#aws-s3-setup)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## 🌐 Live Tech Stack
+## ✅ Features
 
-- **Frontend**: HTML + Bootstrap + Vanilla JS
-- **Backend**: Node.js + Express
-- **Database**: MongoDB (Dockerized)
-- **File Storage**: AWS S3
-- **Mongo Dashboard**: Mongo Express (via Docker)
+- 🔍 Load user profile by email
+- 🖼️ Upload profile photo to S3
+- 🧾 Save full user data in MongoDB
+- 📊 View and verify data via Mongo Express
+- 🌐 Responsive Bootstrap UI
+- 💾 Persistent DB storage via Docker volumes
+
+---
+
+## 🌐 Tech Stack
+
+- **Frontend:** HTML, Bootstrap, Vanilla JS
+- **Backend:** Node.js, Express
+- **Database:** MongoDB (Dockerized)
+- **File Storage:** AWS S3
+- **Dashboard:** Mongo Express (via Docker)
 
 ---
 
 ## 🔐 Environment Setup (`.env` file)
 
-You must create a `.env` file in the root of the project with the following variables:
+Create a `.env` file in the root of the project with the following variables:
 
 ```env
 # MongoDB
 MONGODB_URI=mongodb://admin:password@mongodb:27017
-MONGODB_DB_NAME=profileAppDB
+MONGODB_DB_NAME=my-db
 MONGO_INITDB_ROOT_USERNAME=admin
 MONGO_INITDB_ROOT_PASSWORD=password
 
 # AWS S3 Config
 AWS_ACCESS_KEY_ID=your-access-key-id
 AWS_SECRET_ACCESS_KEY=your-secret-access-key
-AWS_REGION=your-region (e.g., us-east-1)
+AWS_REGION=your-region
 AWS_BUCKET_NAME=your-bucket-name
 
 # App
 APP_PORT=3000
+```
 
+---
 
-🚀 Run the App Locally (via Docker)
-Prerequisites:
+## 🚀 Installation & Running Locally (via Docker Compose)
 
-Docker Compose
+**Prerequisites:**  
+- Docker & Docker Compose installed
 
-1. Clone the Repository
-git clone https://github.com/your-username/techworld-js-docker-demo-app.git
+1. **Clone the Repository**  
+    ```sh
+    git clone https://github.com/zeedevops2138/Updated_Profile.git
+    cd Updated_Profile
+    ```
 
-cd techworld-js-docker-demo-app
+2. **Create `.env` file**  
+   As described above.
 
-2. Create .env file
+3. **Build & Run with Docker Compose**  
+    ```sh
+    docker compose up --build
+    ```
 
-As explained above.
+4. **Access the App**  
+    - Frontend: [http://localhost:3000](http://localhost:3000)
+    - Mongo Express: [http://localhost:8081](http://localhost:8081)
 
-3. Build & Run with Docker Compose
-   docker compose up --build
+---
 
-4. Access the App
+## 🪣 AWS S3 Bucket Setup
 
-Frontend: http://localhost:3000
+1. **Create Bucket**  
+   - Login to AWS Console → Go to S3  
+   - Create a new bucket (e.g., `users-updated-photos-bucket`)  
+   - Disable "Block all public access"
 
-Mongo Express: http://localhost:8081
+2. **Set Bucket Policy**  
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "PublicReadGetObject",
+         "Effect": "Allow",
+         "Principal": "*",
+         "Action": "s3:GetObject",
+         "Resource": "arn:aws:s3:::users-updated-photos-bucket/*"
+       }
+     ]
+   }
+   ```
 
-🪣 How to Create and Configure AWS S3 Bucket
+3. **Permissions**  
+   - Ensure your AWS IAM user has `PutObject` permission.  
+   - Use correct `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in `.env`.
 
-Login to AWS Console → Go to S3
+---
 
-Create a new bucket (e.g., users-updated-photos-bucket)
+## 📁 Project Structure
 
-Disable "Block all public access"
-
-Set Bucket Policy like below:
-
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::users-updated-photos-bucket/*"
-    }
-  ]
-}
-
-
-Make sure:
-
-Your AWS IAM user has PutObject permission
-
-You use correct AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env
-
-📁 Project Structure
+```
 ├── server.js              # Express backend
 ├── index.html             # Main frontend
 ├── style.css              # UI styling
@@ -109,17 +131,23 @@ You use correct AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env
 ├── docker-compose.yml     # All services
 ├── Dockerfile             # For the app container
 └── README.md              # You're reading this
+```
 
-✅ Features
+---
 
-🔍 Load user by email
+## 🤝 Contributing
 
-🖼️ Upload profile photo to S3
+Contributions are welcome!  
+Please open issues or submit pull requests for improvements and bug fixes.
 
-🧾 Save full user data in MongoDB
+---
 
-📊 View and verify via Mongo Express
+## 📄 License
 
-🌐 Clean Bootstrap UI
+This project is licensed under the [MIT License](LICENSE).
 
-💾 Persistent DB storage via volumes
+---
+
+## 📬 Contact
+
+For questions or support, please open an issue or reach out to [@zeedevops2138](https://github.com/zeedevops2138).
