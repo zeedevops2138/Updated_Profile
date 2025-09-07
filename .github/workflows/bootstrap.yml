@@ -30,7 +30,7 @@ jobs:
       - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::009160045098:role/GitHub
+          role-to-assume: arn:aws:iam::880420039188:role/Github-ECR-bootstrap
           aws-region: us-east-1
 
       - name: 🧱 Create ECR repository (if not exists)
