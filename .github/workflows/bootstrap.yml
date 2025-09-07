@@ -3,7 +3,10 @@ name: Bootstrap & Deploy to AWS ECR
 
 on:
   push:
-    branches: [ master ]
+    branches:
+     - master 
+    paths: 
+     - 'app/**'
   workflow_dispatch:
 
 permissions:
