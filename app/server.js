@@ -20,12 +20,9 @@ console.log({ mongoUrl, databaseName, bucket, region });
 
 // AWS S3 configuration
 const s3Client = new S3Client({
-  region,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
+  region: process.env.AWS_REGION
 });
+
 
 // File upload setup
 const upload = multer({ storage: multer.memoryStorage() });
