@@ -8,14 +8,19 @@ const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const app = express();
 
-// Environment variables
+// Env vars
 const mongoUrl = process.env.MONGODB_URI;
 const databaseName = process.env.MONGODB_DB_NAME;
 const port = process.env.APP_PORT || 3000;
+const bucket = process.env.AWS_BUCKET_NAME;
+const region = process.env.AWS_REGION;
+
+console.log('ENV VALUES');
+console.log({ mongoUrl, databaseName, bucket, region });
 
 // AWS S3 configuration
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
+  region,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -25,11 +30,10 @@ const s3Client = new S3Client({
 // File upload setup
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Serve static files (CSS, images, etc.)
+app.use(express.static(path.join(__dirname))); // Static files
 
-// Serve the homepage
+// Serve homepage
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -46,59 +50,71 @@ app.get('/profile-picture', (req, res) => {
   }
 });
 
-// Endpoint to update profile
+// Profile update endpoint
 app.post('/update-profile', upload.single('profileImage'), async (req, res) => {
   try {
+    console.log('➡️ /update-profile request received');
     const userPayload = JSON.parse(req.body.user);
     const email = userPayload.email?.trim();
 
     if (!email) {
+      console.warn('⚠️ Email is missing in payload');
       return res.status(400).json({ error: 'Email is required.' });
     }
 
     const updateData = { ...userPayload };
 
     if (req.file) {
+      console.log('📸 Uploading profile image to S3...');
       const key = `profiles/${Date.now()}_${req.file.originalname}`;
-      await s3Client.send(new PutObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
+      const command = new PutObjectCommand({
+        Bucket: bucket,
         Key: key,
         Body: req.file.buffer,
-        ContentType: req.file.mimetype,        
-      }));
-      updateData.imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        ContentType: req.file.mimetype,
+      });
+
+      try {
+        await s3Client.send(command);
+        console.log(`✅ Image uploaded: ${key}`);
+        updateData.imageUrl = `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
+      } catch (s3Error) {
+        console.error('❌ S3 Upload Error:', s3Error);
+        return res.status(500).json({ error: 'Failed to upload image to S3.' });
+      }
     }
 
     const client = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
     const db = client.db(databaseName);
 
-    await db.collection('users').updateOne(
+    const result = await db.collection('users').updateOne(
       { email },
       { $set: updateData },
       { upsert: true }
     );
+    console.log(`✅ MongoDB update result: ${JSON.stringify(result)}`);
 
     await client.close();
 
     res.json(updateData);
   } catch (err) {
-    console.error('Error in /update-profile:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('❌ Error in /update-profile:', err);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
   }
 });
 
-// Endpoint to get profile
+// Profile fetch endpoint
 app.get('/get-profile', async (req, res) => {
   try {
     const email = req.query.email?.trim();
 
     if (!email) {
-      console.error('No email provided in /get-profile');
+      console.warn('⚠️ No email provided to /get-profile');
       return res.status(400).json({ error: 'Email is required.' });
     }
 
-    console.log(`Looking up profile for email: ${email}`);
+    console.log(`🔍 Looking up profile for email: ${email}`);
 
     const client = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
@@ -112,18 +128,18 @@ app.get('/get-profile', async (req, res) => {
       res.json({ newUser: true });
     }
   } catch (err) {
-    console.error('Error in /get-profile:', err);
+    console.error('❌ Error in /get-profile:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err.stack || err);
-  res.status(500).json({ error: 'Something broke on the server.' });
+  console.error('🔥 Unhandled error:', err.stack || err);
+  res.status(500).json({ error: 'Server Error' });
 });
 
-// Start the server
+// Start the app
 app.listen(port, () => {
-  console.log(`App listening on port ${port}!`);
+  console.log(`🚀 App listening on port ${port}!`);
 });
