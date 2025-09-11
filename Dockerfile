@@ -16,6 +16,11 @@ COPY app ./
 ##############################
 FROM node:20-slim
 
+# TEMP: Install AWS CLI for debugging (can be removed later)
+RUN apt-get update && apt-get install -y curl unzip python3 python3-pip && \
+    pip3 install awscli && \
+    apt-get clean
+
 RUN groupadd -r appuser && useradd -r -g appuser -d /app appuser
 
 WORKDIR /app
