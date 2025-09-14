@@ -69,7 +69,6 @@ app.post('/update-profile', upload.single('profileImage'), async (req, res) => {
         Key: key,
         Body: req.file.buffer,
         ContentType: req.file.mimetype,
-        ACL: 'public-read' 
       });
 
       try {
