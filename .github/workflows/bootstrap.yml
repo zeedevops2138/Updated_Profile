@@ -1,5 +1,5 @@
 
-name: Bootstrap & Deploy to AWS ECR
+name: Bootstrap & Build and push images to ECR
 
 on:
   push:
